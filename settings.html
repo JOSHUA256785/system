@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings - SERVICE COPS</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Small page-specific tweaks to better match the mockup */
+        .settings-page { padding: 28px; max-width: 1100px; margin: 20px auto; }
+        .settings-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+        .tabs { display:flex; gap:16px; margin-bottom:18px; }
+        .tab { padding:10px 14px; border-radius:6px; color:#666; cursor:pointer }
+        .tab.active { border-bottom:3px solid #fa8200; color:#222; }
+        .card { background:#fff; border-radius:8px; padding:18px; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+        .form-row { display:flex; gap:18px; margin-bottom:12px; }
+        .form-col { flex:1; }
+        .field { display:block; margin-bottom:8px; font-weight:600; color:#333; }
+        .input, input[type="text"], input[type="file"], select { width:100%; padding:10px 12px; border:1px solid #e6e6e6; border-radius:6px; }
+        .save-btn { background:#fa8200; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; }
+        .logo-drop { height:72px; display:flex; align-items:center; justify-content:center; border:1px dashed #e6e6e6; border-radius:6px; color:#999; }
+        .muted { color:#888; font-size:13px; }
+    </style>
+</head>
+<body>
+    <div class="settings-page">
+        <div class="settings-header">
+            <div>
+                <h1>Settings</h1>
+                <p class="muted">Configure your system settings and other preferences to customize your billing system.</p>
+            </div>
+            <div>
+                <button class="save-btn" id="saveTop">Save changes</button>
+            </div>
+        </div>
+
+        <div class="tabs card" role="tablist">
+            <div class="tab active" data-target="tab-general">General Settings</div>
+            <div class="tab" data-target="tab-payments">Payments</div>
+            <div class="tab" data-target="tab-pppoe">PPPoE</div>
+            <div class="tab" data-target="tab-hotspot">Hotspot</div>
+            <div class="tab" data-target="tab-sms">SMS</div>
+            <div class="tab" data-target="tab-whatsapp">WhatsApp</div>
+            <div class="tab" data-target="tab-notifications">Notifications</div>
+            <div class="tab" data-target="tab-2fa">Security (2FA)</div>
+        </div>
+
+        <div class="card" id="tabsContainer">
+            <!-- General / Appearance -->
+            <div class="tab-content" id="tab-general">
+                <form id="settingsForm" onsubmit="return false;">
+                    <h3>Appearance</h3>
+                    <p class="muted">Configure your system appearance settings.</p>
+
+                    <div style="margin-top:12px; margin-bottom:14px;">
+                        <label class="field">System Logo</label>
+                        <div class="logo-drop">
+                            <input type="file" id="systemLogo" accept="image/*">
+                        </div>
+                        <p class="muted">Upload a Logo that will be used in the header of the system and login page.</p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="field">The name of your ISP / Wifi Company*</label>
+                            <input class="input" type="text" id="companyName" data-key="companyName" placeholder="                 ">
+                        </div>
+                        <div class="form-col">
+                            <label class="field">Color</label>
+                            <input class="input" type="text" id="brandColor" data-key="brandColor" value="#fa8200">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="field">Font</label>
+                            <select id="fontSelect" data-key="fontSelect" class="input">
+                                <option>Work Sans</option>
+                                <option>Inter</option>
+                                <option>Arial</option>
+                                <option>Roboto</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <label class="field">Customer Support Number*</label>
+                            <input class="input" type="text" id="supportNumber" data-key="supportNumber" placeholder="+256.........">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:8px;">
+                        <label class="field">Customer Support Email</label>
+                        <input class="input" type="text" id="supportEmail" data-key="supportEmail" placeholder="support@example.com">
+                        <p class="muted">The email your clients can contact when they need support.</p>
+                    </div>
+
+                    <div style="margin-top:18px; display:flex; justify-content:flex-end; gap:10px;">
+                        <button type="button" class="save-btn" id="saveBtn">Save changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Payments -->
+            <div class="tab-content" id="tab-payments" style="display:none;">
+                <h3>Payments</h3>
+                <p class="muted">Configure payment gateways and currency.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">Payment Gateway</label>
+                        <input class="input" type="text" id="paymentGateway" data-key="paymentGateway" placeholder="sasula...">
+                    </div>
+                    <div class="form-col">
+                        <label class="field">Currency</label>
+                        <input class="input" type="text" id="currency" data-key="currency" placeholder="UGX">
+                    </div>
+                </div>
+            </div>
+
+            <!-- PPPoE -->
+            <div class="tab-content" id="tab-pppoe" style="display:none;">
+                <h3>PPPoE</h3>
+                <p class="muted">PPPoE / RADIUS settings.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">RADIUS Server</label>
+                        <input class="input" type="text" id="radiusServer" data-key="radiusServer" placeholder="192.168.1.1">
+                    </div>
+                    <div class="form-col">
+                        <label class="field">RADIUS Secret</label>
+                        <input class="input" type="text" id="radiusSecret" data-key="radiusSecret" placeholder="secret">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotspot -->
+            <div class="tab-content" id="tab-hotspot" style="display:none;">
+                <h3>Hotspot</h3>
+                <p class="muted">Hotspot behavior and welcome messages.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">Hotspot Enabled</label>
+                        <select id="hotspotEnabled" data-key="hotspotEnabled" class="input"><option>Yes</option><option>No</option></select>
+                    </div>
+                    <div class="form-col">
+                        <label class="field">Welcome Message</label>
+                        <input class="input" type="text" id="welcomeMessage" data-key="welcomeMessage" placeholder="Welcome to .........">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMS -->
+            <div class="tab-content" id="tab-sms" style="display:none;">
+                <h3>SMS</h3>
+                <p class="muted">SMS provider and API key.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">SMS Provider</label>
+                        <input class="input" type="text" id="smsProvider" data-key="smsProvider" placeholder="Twilio...">
+                    </div>
+                    <div class="form-col">
+                        <label class="field">SMS API Key</label>
+                        <input class="input" type="text" id="smsApiKey" data-key="smsApiKey">
+                    </div>
+                </div>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="tab-content" id="tab-whatsapp" style="display:none;">
+                <h3>WhatsApp</h3>
+                <p class="muted">WhatsApp integration settings.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">WhatsApp Enabled</label>
+                        <select id="waEnabled" data-key="waEnabled" class="input"><option>Yes</option><option>No</option></select>
+                    </div>
+                    <div class="form-col">
+                        <label class="field">WhatsApp API Key</label>
+                        <input class="input" type="text" id="waApiKey" data-key="waApiKey">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="tab-content" id="tab-notifications" style="display:none;">
+                <h3>Notifications</h3>
+                <p class="muted">System notification preferences.</p>
+                <div class="form-row">
+                    <div class="form-col">
+                        <label class="field">Email Notifications</label>
+                        <select id="notifyEmail" data-key="notifyEmail" class="input"><option>Enabled</option><option>Disabled</option></select>
+                    </div>
+                    <div class="form-col">
+                        <label class="field">SMS Notifications</label>
+                        <select id="notifySMS" data-key="notifySMS" class="input"><option>Enabled</option><option>Disabled</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security - 2FA -->
+            <div class="tab-content" id="tab-2fa" style="display:none;">
+                <h3>Two-Factor Authentication (2FA)</h3>
+                <p class="muted">Enable 2FA to add an extra layer of security to your account.</p>
+                
+                <div style="background:#f5f5f5; padding:16px; border-radius:6px; margin-bottom:20px;">
+                    <div style="margin-bottom:14px;">
+                        <label class="field">2FA Status</label>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span id="twoFactorStatus" style="display:inline-block; padding:6px 12px; border-radius:6px; background:#f44336; color:#fff; font-size:12px; font-weight:600;">Disabled</span>
+                            <span id="backupCodesCount" style="color:#666; font-size:13px;"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enable 2FA Section -->
+                <div id="enable2FASection" style="border:1px solid #e0e0e0; border-radius:6px; padding:16px; margin-bottom:16px;">
+                    <h4 style="margin:0 0 14px 0;">Enable Two-Factor Authentication</h4>
+                    <p class="muted" style="margin-bottom:12px;">Scan the QR code with your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, etc.)</p>
+                    
+                    <div style="background:#f9f9f9; padding:16px; border-radius:6px; margin-bottom:16px; text-align:center;">
+                        <div id="qrCodeContainer" style="display:none;">
+                            <div id="qrCode" style="margin-bottom:12px;"></div>
+                            <p class="muted">Or enter this code manually:</p>
+                            <code id="secretCode" style="display:block; background:#fff; padding:8px; border-radius:4px; font-weight:600; margin:8px 0; word-break:break-all;"></code>
+                        </div>
+                        <button type="button" id="generateQRBtn" class="save-btn">Generate QR Code</button>
+                    </div>
+
+                    <div style="margin-bottom:16px;">
+                        <label class="field">Verify Code</label>
+                        <input class="input" type="text" id="verifyCode" placeholder="6-digit code from your app" maxlength="6" style="max-width:200px;">
+                        <p class="muted">Enter a code from your authenticator app to verify</p>
+                    </div>
+
+                    <div style="background:#fff3cd; padding:12px; border-radius:6px; margin-bottom:16px; border-left:4px solid #ffc107;">
+                        <strong>⚠️ Save your backup codes:</strong>
+                        <div id="backupCodesDisplay" style="margin-top:10px; font-family:monospace; font-size:12px; line-height:1.6; display:none;"></div>
+                    </div>
+
+                    <button type="button" id="enableBtn" class="save-btn">Enable 2FA</button>
+                </div>
+
+                <!-- Backup Codes Management -->
+                <div id="twoFAEnabledSection" style="border:1px solid #e0e0e0; border-radius:6px; padding:16px; margin-bottom:16px; display:none;">
+                    <h4 style="margin:0 0 14px 0;">Backup Codes</h4>
+                    <p class="muted">You have <strong id="backupCodeCount">0</strong> backup codes remaining. Generate new codes if you need more.</p>
+                    
+                    <button type="button" id="generateBackupCodesBtn" style="background:#0066cc; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin:12px 0;">Generate New Backup Codes</button>
+                    
+                    <div style="margin-top:16px; padding-top:16px; border-top:1px solid #e0e0e0;">
+                        <h4 style="margin:0 0 12px 0;">Disable 2FA</h4>
+                        <p class="muted">Disabling 2FA will remove the extra security layer from your account.</p>
+                        <button type="button" id="disableBtn" style="background:#f44336; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-top:8px;">Disable 2FA</button>
+                    </div>
+                </div>
+
+                <div id="twoFactorMessage" style="margin-top:12px; padding:12px; border-radius:6px; display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="settings.js"></script>
+</body>
+</html>

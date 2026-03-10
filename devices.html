@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERVICE COPS - Devices</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .devices-table {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .device-row {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 0.8fr 0.8fr 0.8fr 150px;
+            gap: 15px;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .device-row:last-child {
+            border-bottom: none;
+        }
+
+        .device-row:hover {
+            background: #fafafa;
+        }
+
+        .device-name {
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vendor-icon {
+            font-size: 18px;
+        }
+
+        .device-status {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-online {
+            background: #e8f5e9;
+            color: #558b2f;
+        }
+
+        .status-offline {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-configured {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            background: #f57c00;
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .btn-small:hover {
+            background: #e65100;
+        }
+
+        .btn-small.secondary {
+            background: #2196f3;
+        }
+
+        .btn-small.secondary:hover {
+            background: #1976d2;
+        }
+
+        .btn-small.danger {
+            background: #f44336;
+        }
+
+        .btn-small.danger:hover {
+            background: #d32f2f;
+        }
+
+        .devices-header {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 0.8fr 0.8fr 0.8fr 150px;
+            gap: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .device-metrics {
+            font-family: monospace;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .device-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .device-tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            color: #999;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            position: relative;
+            bottom: -2px;
+            transition: all 0.3s ease;
+        }
+
+        .device-tab-btn.active {
+            color: #333;
+            border-bottom-color: #f57c00;
+        }
+
+        .device-tab-btn:hover {
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f57c00;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            margin-left: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-buttons .btn-small {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+
+        .remote-link {
+            color: #f57c00;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .remote-link:hover {
+            text-decoration: underline;
+        }
+
+        .provisioning-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .provisioning-pending {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .provisioning-completed {
+            background: #e8f5e9;
+            color: #558b2f;
+        }
+
+        .provisioning-failed {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .no-devices {
+            color: #999;
+            padding: 40px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: fixed; top: 10px; left: 10px; display: flex; gap: 8px; z-index: 100;">
+        <button class="nav-btn" onclick="navigateBack()" title="Go back">◀</button>
+        <button class="nav-btn" onclick="navigateForward()" title="Go forward">▶</button>
+    </div>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🌐 SERVICE COPS</h2>
+                <span class="status-time" id="currentTime"></span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="index.html">📊 Dashboard</a></li>
+                    <li><a href="#devices" class="active">📱 Devices</a></li>
+                    <li><a href="packages.html">📦 Packages</a></li>
+                    <li><a href="#transactions">💳 Transactions</a></li>
+                    <li><a href="#analytics">📈 Analytics</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <input type="text" class="search-box" placeholder="🔍 Search devices...">
+                </div>
+                <div class="top-bar-right">
+                    <button class="btn-icon">🔔</button>
+                    <button class="btn-icon">⚙️</button>
+                    <div class="user-profile">
+                        <span id="userName">Admin User</span>
+                        <button class="btn-logout" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>Network Devices Management</h1>
+                        <p style="font-size: 12px; color: #888;">View and manage all connected devices and provisioning status</p>
+                    </div>
+                    <div class="page-filters" style="display:flex; gap:8px; align-items:center;">
+                        <button class="btn btn-primary" onclick="addNewDevice()">➕ Add Device</button>
+                        <button class="btn btn-primary" style="background:#1976d2;" onclick="refreshDevices()">🔄 Refresh</button>
+                    </div>
+                </div>
+
+                <!-- Device Tabs -->
+                <div class="device-tabs">
+                    <button class="device-tab-btn active" onclick="switchDeviceTab('added')">
+                        ➕ Added Devices <span class="badge" id="addedBadge">0</span>
+                    </button>
+                    <button class="device-tab-btn" onclick="switchDeviceTab('provisioned')">
+                        ✅ Provisioned Devices <span class="badge" id="provisionedBadge">0</span>
+                    </button>
+                </div>
+
+                <!-- Added Devices Tab -->
+                <div id="added-tab" class="tab-content active">
+                    <div class="devices-table">
+                        <div class="devices-header">
+                            <div>Board Name</div>
+                            <div>Vendor</div>
+                            <div>CPU %</div>
+                            <div>Memory</div>
+                            <div>Status</div>
+                            <div>Action</div>
+                        </div>
+                        <div id="addedDevicesContainer">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provisioned Devices Tab -->
+                <div id="provisioned-tab" class="tab-content">
+                    <div class="devices-table">
+                        <div class="devices-header">
+                            <div>Board Name</div>
+                            <div>Vendor</div>
+                            <div>CPU %</div>
+                            <div>Memory</div>
+                            <div>Status</div>
+                            <div>Remote</div>
+                        </div>
+                        <div id="provisionedDevicesContainer">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Device Modal -->
+    <div id="deviceModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:999; overflow-y:auto;">
+        <div style="background:#fff; width:780px; max-width:95%; border-radius:10px; padding:20px; box-shadow:0 6px 24px rgba(0,0,0,0.2); margin:20px auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="margin:0;" id="modalTitle">Add New Device</h3>
+                <button onclick="closeDeviceModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+            </div>
+
+            <!-- Communication Log - Live Billing & Vendor Communication -->
+            <div style="margin-bottom:16px;">
+                <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">📟 Communication Log (Billing System ↔ Vendor)</label>
+                <pre id="deviceCommLog" style="height:100px; overflow:auto; background:#1e1e1e; color:#0f0; padding:10px; border-radius:6px; font-family:monospace; font-size:11px; margin:0; border:1px solid #ddd;">[Ready for communication]
+$ Initializing connection handler...
+$ Waiting for vendor response...</pre>
+            </div>
+
+            <!-- Manual API Key Input Section -->
+            <div style="background: #fffbf0; border-left: 4px solid #f57c00; padding: 12px; border-radius: 6px; margin-bottom:16px; display:none;" id="apiKeyInputSection">
+                <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:8px;">🔑 Vendor API Credentials (Manual Entry)</label>
+                <div style="display:grid; gap:8px; margin-bottom:10px;">
+                    <div>
+                        <input id="manualApiKey" type="password" placeholder="Enter vendor API key / token" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px; font-size:12px;" />
+                    </div>
+                    <div>
+                        <input id="manualApiUsername" type="text" placeholder="Username (if required)" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px; font-size:12px;" />
+                    </div>
+                </div>
+                <div style="display:flex; gap:8px; justify-content:flex-end;">
+                    <button onclick="startVendorCommunication()" style="padding:6px 12px; background:#f57c00; color:white; border:none; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">▶️ Start Communication</button>
+                    <button onclick="toggleApiKeyInput(false)" style="padding:6px 12px; background:#999; color:white; border:none; border-radius:4px; cursor:pointer; font-size:11px; font-weight:600;">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Device Information Section -->
+            <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom:16px;">
+                <h3 style="color: #333; margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">📋 Device Information</h3>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">Device Name *</label>
+                        <input id="deviceName" type="text" placeholder="e.g., MikroTik1" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;" />
+                    </div>
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">Vendor *</label>
+                        <select id="deviceVendor" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;" onchange="updateVendorInfo()">
+                            <option value="">-- Select vendor --</option>
+                            <option value="mikrotik">🟢 MikroTik</option>
+                            <option value="cisco">🔴 Cisco</option>
+                            <option value="ubiquiti">🔵 Ubiquiti</option>
+                            <option value="meraki">🔷 Meraki</option>
+                            <option value="huawei">🟡 Huawei</option>
+                            <option value="netgear">⚫ Netgear</option>
+                            <option value="other">🟣 Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">Device Type *</label>
+                        <select id="deviceType" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">-- Select type --</option>
+                            <option value="router">Router</option>
+                            <option value="modem">Modem</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">Device Model</label>
+                        <input id="deviceModel" type="text" placeholder="e.g., hAP ac2" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;" />
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">IP Address</label>
+                        <input id="deviceIP" type="text" placeholder="e.g., 192.168.1.1" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;" />
+                    </div>
+                    <div>
+                        <label style="display:block; color:#666; font-size:12px; font-weight:600; margin-bottom:6px;">MAC Address</label>
+                        <input id="deviceMAC" type="text" placeholder="e.g., 00:11:22:33:44:55" style="width:100%; padding:8px; border: 1px solid #ddd; border-radius: 4px;" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Integration Section -->
+            <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom:16px;">
+                <h3 style="color: #333; margin: 0 0 16px 0; font-size: 14px; font-weight: 600;">🔗 API Integration</h3>
+                
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                        <input id="deviceAPIEnabled" type="checkbox" style="width: 18px; height: 18px; cursor: pointer;" onchange="updateAPIFields()">
+                        <span style="color: #333; font-size: 14px; font-weight: 600;">🔗 Enable API Integration</span>
+                    </label>
+                    <span id="vendorInfo" style="color: #f57c00; font-size: 11px; font-weight: 600;"></span>
+                </div>
+                
+                <div id="apiConfig" style="display: none; display: grid; gap: 12px;">
+                    <div>
+                        <label style="display: block; color: #666; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Device Firmware</label>
+                        <input type="text" id="deviceFirmware" placeholder="e.g., 6.48" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; color: #666; font-size: 12px; font-weight: 600; margin-bottom: 6px;">API URL / Device Address *</label>
+                        <input type="text" id="apiUrl" placeholder="e.g., https://192.168.1.1:8728 or 192.168.1.1" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box; font-family: monospace;">
+                        <p id="apiUrlHint" style="color: #999; font-size: 11px; margin: 4px 0 0 0;">Default port will be used if not specified</p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="display: block; color: #666; font-size: 12px; font-weight: 600; margin-bottom: 6px;">Integration Type *</label>
+                            <select id="integrationType" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+                                <option value="">Select Type</option>
+                                <option value="rest">REST API</option>
+                                <option value="ssh">SSH</option>
+                                <option value="snmp">SNMP</option>
+                                <option value="netconf">NETCONF</option>
+                                <option value="modbus">Modbus</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #666; font-size: 12px; font-weight: 600; margin-bottom: 6px;">API Secret Key</label>
+                            <input type="password" id="apiSecret" placeholder="Device API key or password" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap;">
+                <button id="connectVendorBtn" class="btn-small secondary" onclick="toggleApiKeyInput(true)" style="display:none; background:#2196f3;">🔌 Connect to Vendor</button>
+                <button class="btn-small" onclick="closeDeviceModal()" style="background:#999;">Cancel</button>
+                <button class="btn-small" onclick="saveDevice()">Save Device</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="devices.js"></script>
+    <script src="nav-arrows.js"></script>
+</body>
+</html>

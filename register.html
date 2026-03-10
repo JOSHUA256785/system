@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERVICE COPS - Register</title>
+    <link rel="stylesheet" href="login.css">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+    <div style="position: fixed; top: 10px; left: 10px; display: flex; gap: 8px; z-index: 100;">
+        <button class="nav-btn" onclick="navigateBack()" title="Go back">◀</button>
+        <button class="nav-btn" onclick="navigateForward()" title="Go forward">▶</button>
+    </div>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>🌐 SERVICE COPS</h1>
+                <p>Create Your Account</p>
+            </div>
+
+            <form id="registerForm" class="login-form">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input 
+                            type="text" 
+                            id="firstName" 
+                            name="firstName" 
+                            placeholder="John"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input 
+                            type="text" 
+                            id="lastName" 
+                            name="lastName" 
+                            placeholder="Doe"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Choose a username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="your@email.com"
+                        required
+                    >
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <select 
+                            id="country" 
+                            name="country" 
+                            required
+                            onchange="updatePhoneCode()"
+                        >
+                            <option value="">Select your country</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input 
+                                type="text" 
+                                id="phoneCode" 
+                                name="phoneCode" 
+                                placeholder="+256" 
+                                readonly
+                                style="flex: 0 0 70px; background: #f5f5f5;"
+                            >
+                            <input 
+                                type="tel" 
+                                id="phone" 
+                                name="phone" 
+                                placeholder="700000000"
+                                required
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Create a strong password"
+                        required
+                    >
+                    <small style="color: #888; margin-top: 5px; display: block;">
+                        At least 8 characters recommended
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirm your password"
+                        required
+                    >
+                </div>
+
+                <!-- KYC Verification Section -->
+                <div class="kyc-section" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <h2 style="text-align: center; margin-bottom: 20px;">KYC Verification</h2>
+                    <p style="text-align: center; color: #666; margin-bottom: 20px;">Please upload your ID document for verification</p>
+
+                    <div class="form-group">
+                        <label for="idType">Type of ID</label>
+                        <select id="idType" name="idType" required>
+                            <option value="">-- Select ID Type --</option>
+                            <option value="passport">Passport</option>
+                            <option value="national_id">National ID</option>
+                            <option value="driver_license">Driver's License</option>
+                            <option value="utility_bill">Utility Bill</option>
+                        </select>
+                    </div>
+
+                    <div id="idNumberField" style="display:none;">
+                        <div class="form-group">
+                            <label for="idNumber">ID Number</label>
+                            <input type="text" id="idNumber" name="idNumber">
+                        </div>
+                    </div>
+
+                    <div id="dobField" style="display:none;">
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="text" id="dob" name="dob">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="document">Upload Document</label>
+                        <input type="file" id="document" name="document" accept=".jpg,.jpeg,.png,.pdf" required>
+                    </div>
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
+                </div>
+
+                <button type="submit" class="btn-login">Create Account</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Already have an account? <a href="login.html">Sign in here</a></p>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+        </div>
+
+        <div class="login-info">
+            <h2>Join SERVICE COPS Hotspot</h2>
+            <p>Manage your clients on your finger tips</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="icon">⚡</span>
+                    <h3>Instant Access</h3>
+                    <p>Manage routers remotely and instantly</p>
+                </div>
+                <div class="feature">
+                    <span class="icon">💵</span>
+                    <h3>Affordable Plans</h3>
+                    <p>Affordable , secure and relable </p>
+                </div>
+                <div class="feature">
+                    <span class="icon">📱</span>
+                    <h3>Easy Management</h3>
+                    <p>Manage your account and usage anytime</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="register.js"></script>
+    <script src="nav-arrows.js"></script>
+    <script>
+        // KYC Form JavaScript
+        const idTypeSelect = document.getElementById('idType');
+        const idNumberField = document.getElementById('idNumberField');
+        const idNumberInput = document.getElementById('idNumber');
+        const dobField = document.getElementById('dobField');
+        const dobInput = document.getElementById('dob');
+        const fileInput = document.getElementById('document');
+
+        // Show ID Number field when ID type selected
+        idTypeSelect.addEventListener('change', () => {
+            if (idTypeSelect.value) {
+                idNumberField.style.display = 'block';
+                idNumberInput.placeholder = `Enter your ${idTypeSelect.options[idTypeSelect.selectedIndex].text} number`;
+                idNumberInput.required = true;
+            } else {
+                idNumberField.style.display = 'none';
+                idNumberInput.required = false;
+            }
+        });
+
+        // OCR on uploaded image
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    Tesseract.recognize(e.target.result, 'eng').then(({ data: { text } }) => {
+                        // Auto-fill fields if keywords found
+                        if (text.match(/First Name:\s*(\w+)/i)) {
+                            document.getElementById('firstName').value = RegExp.$1;
+                        }
+                        if (text.match(/Surname:\s*(\w+)/i)) {
+                            document.getElementById('lastName').value = RegExp.$1;
+                        }
+                        if (text.match(/ID\s*Number:\s*(\w+)/i)) {
+                            document.getElementById('idNumber').value = RegExp.$1;
+                            idNumberField.style.display = 'block';
+                            idNumberInput.required = true;
+                        }
+                        if (text.match(/Date\s*of\s*Birth[:\-]?\s*([0-9]{2}[\/\-][0-9]{2}[\/\-][0-9]{4})/i)) {
+                            dobInput.value = RegExp.$1;
+                            dobField.style.display = 'block';
+                            dobInput.required = true;
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle KYC form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            // KYC validation can be added here
+            console.log('Registration with KYC submitted');
+            // The form will proceed with normal submission
+        });
+    </script>
+</body>
+</html>

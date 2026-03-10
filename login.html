@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERVICE COPS - Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div style="position: fixed; top: 10px; left: 10px; display: flex; gap: 8px; z-index: 100;">
+        <button class="nav-btn" onclick="navigateBack()" title="Go back">◀</button>
+        <button class="nav-btn" onclick="navigateForward()" title="Go forward">▶</button>
+    </div>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>SERVICE COPS</h1>
+                <p>Internet Billing System</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        placeholder="Enter your username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn-login">Sign In</button>
+            </form>
+
+            <!-- 2FA Verification Form (hidden by default) -->
+            <form id="twoFactorForm" class="login-form" style="display: none;">
+                <h3 style="text-align: center; margin-bottom: 20px;">Two-Factor Authentication</h3>
+                <p style="text-align: center; color: #666; margin-bottom: 15px;">Enter the 6-digit code from your authenticator app or a backup code</p>
+                
+                <div class="form-group">
+                    <label for="twoFactorCode">Authentication Code</label>
+                    <input 
+                        type="text" 
+                        id="twoFactorCode" 
+                        name="twoFactorCode" 
+                        placeholder="000000"
+                        maxlength="11"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn-login">Verify Code</button>
+                <button type="button" class="btn-secondary" id="backBtn" style="margin-top: 8px; background: #e0e0e0; color: #333;">Back to Login</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="register.html">Register here</a></p>
+                <p><a href="#forgot">Forgot password?</a></p>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+        </div>
+
+        <div class="login-info">
+            <h2>Welcome to SERVICE COPS</h2>
+            <p>When Innovation Matters</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <span class="icon">📦</span>
+                    <h3>management</h3>
+                    <p>managage your clients evry where remotely</p>
+                </div>
+                <div class="feature">
+                       pip install pyotp                       pip install pyotp                       pip install pyotp                       pip install pyotp                    <span class="icon">💰</span>
+                    <h3>Fair Pricing</h3>
+                    <p>Affordable and transparent pricing</p>
+                </div>
+                <div class="feature">
+                    <span class="icon">⚡</span>
+                    <h3>Account Management</h3>
+                    <p>All in one place for managing your accounts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="copyright-footer">
+        <p>All payments are collected by Fincom Technologies Limited. Fincom Technologies Limited is regulated by Bank of Uganda</p>
+    </footer>
+
+    <script src="login.js"></script>
+    <script src="nav-arrows.js"></script>
+</body>
+</html>

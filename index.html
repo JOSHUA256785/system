@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERVICE COPS  Billing - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🌐 SERVICE COPS</h2>
+                <span class="status-time" id="currentTime"></span>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <ul>
+                    <li><a href="#dashboard" onclick="loadDashboard()" class="active">📊 Dashboard</a></li>
+                    <li class="has-submenu">
+                        <a href="#client-activity" onclick="toggleClientActivityMenu(event)">🎯 Client Activity ▾</a>
+                        <ul class="submenu" id="clientActivitySubmenu" style="display:none; list-style:none; margin:6px 0 0 10px; padding:0;">
+                            <li><a href="#client-activity-overview" onclick="loadClientActivityTab()">Overview</a></li>
+                            <li><a href="#client-activity-active" onclick="loadActiveUsersPage()">⭐ Active Users</a></li>
+                            <li><a href="#client-activity-online" onclick="loadOnlineUsersPage()">🟢 Online Users</a></li>
+                            <li><a href="#client-activity-offline" onclick="loadOfflineUsersPage()">⚫ Offline Users</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#packages" onclick="loadPackages()">📦 Packages <span class="badge">00</span></a></li>
+                    <li><a href="#transactions" onclick="loadTransactions()">💳 Transactions</a></li>
+                    <li><a href="#revenue" onclick="loadRevenue()">💰 Revenue <span class="badge">00</span></a></li>
+                    <li class="has-submenu">
+                        <a href="#finance" onclick="toggleFinanceMenu(event)">💼 Finance ▾</a>
+                        <ul class="submenu" id="financeSubmenu" style="display:none; list-style:none; margin:6px 0 0 10px; padding:0;">
+                            <li><a href="#finance-invoices" onclick="loadFinanceInvoices()">Invoices</a></li>
+                            <li><a href="#finance-payments" onclick="loadFinancePayments()">Payment Logs</a></li>
+                            <li><a href="#finance-withdraws" onclick="loadFinanceWithdraws()">Withdraws</a></li>
+                            <li><a href="#finance-chart" onclick="loadFinanceAccountIndex()">Account Index</a></li>
+                        </ul>
+                    </li>
+                    <li class="has-submenu">
+                        <a href="#access-control" onclick="toggleAccessMenu(event)">🔒 Access Control ▾</a>
+                        <ul class="submenu" id="accessSubmenu" style="display:none; list-style:none; margin:6px 0 0 10px; padding:0;">
+                            <li><a href="#access-permissions" onclick="loadAccessPermissions()">Permissions</a></li>
+                            <li><a href="#access-ipbinding" onclick="loadAccessIPBinding()">IP Binding</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#tickets" onclick="loadTickets()">🎫 Tickets <span class="badge">0</span></a></li>
+                    <li><a href="#leads" onclick="loadLeads()">📍 Leads <span class="badge">0</span></a></li>
+                    <li><a href="#communication" onclick="loadCommunication()">💬 Communication</a></li>
+                    <li><a href="#analytics" onclick="loadAnalytics()">📈 Analytics</a></li>
+                    <li><a href="#emails" onclick="loadEmails()">📧 Emails</a></li>
+                    <li><a href="#sms" onclick="loadSMS()">📱 SMS</a></li>
+                    <li class="has-submenu">
+                        <a href="#equipment" onclick="toggleEquipmentMenu(event)">⚙️ Equipment ▾</a>
+                        <ul class="submenu" id="equipmentSubmenu" style="display:none; list-style:none; margin:6px 0 0 10px; padding:0;">
+                            <li><a href="devices.html">📱 Devices <span class="badge" id="devicesBadge">0</span></a></li>
+                            <li><a href="#equipment-main" onclick="loadEquipment()">Equipment Overview</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#reports" onclick="loadReports()">📋 Reports</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <div class="nav-arrows">
+                        <button class="nav-btn" onclick="navigateBack()" title="Go back">◀</button>
+                        <button class="nav-btn" onclick="navigateForward()" title="Go forward">▶</button>
+                    </div>
+                    <input type="text" class="search-box" placeholder="🔍 Search...">
+                </div>
+                <div class="top-bar-right">
+                    <button class="btn-icon">🔔</button>
+                    <div class="settings-dropdown">
+                        <button class="btn-icon" onclick="toggleSettings()">⚙️</button>
+                        <div class="settings-menu" id="settingsMenu">
+                            <div class="settings-item">
+                                <span class="settings-icon">🔐</span>
+                                <a href="#2fa" onclick="open2FA()">2FA Settings</a>
+                            </div>
+                            <div class="settings-item">
+                                <span class="settings-icon">⚙️</span>
+                                <a href="settings.html">Settings</a>
+                            </div>
+                            <div class="settings-divider"></div>
+                            <div class="settings-item">
+                                <span class="settings-icon">💳</span>
+                                <a href="#billing" onclick="openBilling()">Billing & Subscription</a>
+                            </div>
+                            <div class="settings-item">
+                                <span class="settings-icon">👥</span>
+                                <a href="#users" onclick="openSystemUsers()">System users</a>
+                            </div>
+                            <div class="settings-item">
+                                <span class="settings-icon">📋</span>
+                                <a href="#logs" onclick="openSystemLogs()">System logs</a>
+                            </div>
+                            <div class="settings-divider"></div>
+                            <div class="settings-item">
+                                <span class="settings-icon">👫</span>
+                                <a href="#refer" onclick="openReferFriend()">Refer a friend</a>
+                            </div>
+                            <div class="settings-item">
+                                <span class="settings-icon">📚</span>
+                                <a href="#docs" onclick="openDocumentation()">Documentation</a>
+                            </div>
+                            <div class="settings-item">
+                                <span class="settings-icon">💬</span>
+                                <a href="#support" onclick="openContactSupport()">Contact Support</a>
+                            </div>
+                            <div class="settings-divider"></div>
+                            <div class="settings-item">
+                                <span class="settings-icon">🚪</span>
+                                <a href="#logout" onclick="logout()">Sign out</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <span id="userName">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="content-area">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1 id="greetingMessage">Good afternoon, Admin! ☀️</h1>
+                        <span class="last-update" id="lastUpdate">Expires: 18 Sep 2025</span>
+                    </div>
+                    <div class="page-filters">
+                        <button class="btn-filter">📅 Filters</button>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <section class="metrics-grid">
+                    <div class="metric-card orange">
+                        <div class="metric-icon">💵</div>
+                        <div class="metric-content">
+                            <h3 id="monthlyRevenue">USH 0.00</h3>
+                            <p>Total earned this month</p>
+                        </div>
+                    </div>
+                    <div class="metric-card orange">
+                        <div class="metric-icon">👤</div>
+                        <div class="metric-content">
+                            <h3 id="subscribedClients">0</h3>
+                            <p>Number of subscribed clients</p>
+                        </div>
+                    </div>
+                    <div class="metric-card orange">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-content">
+                            <h3 id="totalClients" onclick="showAllClientsModal()" style="cursor:pointer;transition:all 0.2s;" onmouseover="this.style.color='#f57c00';this.style.transform='scale(1.05)'" onmouseout="this.style.color='inherit';this.style.transform='scale(1)'">0</h3>
+                            <p>Number of clients</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Charts Row 1 -->
+                <div class="charts-row">
+                    <!-- Payments Chart -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Payments</h3>
+                            <p>Payments and disposable trends</p>
+                            <span class="time-filter">This year ▼</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="paymentsChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Active Users Chart -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Active Users</h3>
+                            <p>Active users vs. Average users</p>
+                            <span class="time-filter">This week ▼</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="activeUsersChart"></canvas>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Charts Row 2 -->
+                <div class="charts-row">
+                    <!-- Sent SMS -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Sent SMS</h3>
+                            <p>SMS sent from the system</p>
+                            <span class="time-filter">This week ▼</span>
+                        </div>
+                        <div class="chart-container sms-chart">
+                            <canvas id="smsChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Network Data Usage -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Network Data Usage</h3>
+                            <p>Total: Download: 0, Total upload: 0 this week</p>
+                            <span class="time-filter">This week ▼</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="networkChart"></canvas>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="charts-row">
+                    <!-- Revenue Forecast -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Revenue Forecast (2 months)</h3>
+                            <p>How much revenue will you expect to generate in the next 2 months?</p>
+                        </div>
+                        <div class="chart-legend">
+                            <span class="legend-item"><span class="dot" style="background: #1e88e5;"></span> Historical Revenue</span>
+                            <span class="legend-item"><span class="dot" style="background: #f57c00;"></span> Forecast Revenue</span>
+                            <span class="legend-item"><span class="dot" style="background: #90a4ae;"></span> Lower Confidence</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Data Usage -->
+                    <section class="chart-card">
+                        <div class="chart-header">
+                            <h3>Data Usage</h3>
+                            <p>Data usage trend for PPPoE and hotspot users</p>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="dataUsageChart"></canvas>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- CLIENT ACTIVITY TAB CONTENT -->
+                <div id="clientActivityContent" style="display:none;">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h1 id="clientActivityTitle">🎯 Client Activity Tracking</h1>
+                            <span class="last-update" id="activityLastUpdate">Last updated: Just now</span>
+                        </div>
+                        <div class="page-filters">
+                            <button class="btn-filter" onclick="refreshClientActivity()">🔄 Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Client Activity Stats -->
+                    <section class="metrics-grid" id="clientActivityMetrics"> <!-- visible on overview or all pages -->
+                        <div class="metric-card orange">
+                            <div class="metric-icon">👥</div>
+                            <div class="metric-content">
+                                <h3 id="statTotalSubscribed">0</h3>
+                                <p>Total Subscribed Clients</p>
+                            </div>
+                        </div>
+                        <div class="metric-card orange">
+                            <div class="metric-icon">⭐</div>
+                            <div class="metric-content">
+                                <h3 id="statActiveToday">0</h3>
+                                <p>Active Users Today</p>
+                            </div>
+                        </div>
+                        <div class="metric-card orange">
+                            <div class="metric-icon">🟢</div>
+                            <div class="metric-content">
+                                <h3 id="statOnlineUsers">0</h3>
+                                <p>Online Users</p>
+                            </div>
+                        </div>
+                        <div class="metric-card orange">
+                            <div class="metric-icon">⚫</div>
+                            <div class="metric-content">
+                                <h3 id="statOfflineUsers">0</h3>
+                                <p>Offline Users</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Active Users Section -->
+                    <section id="activeUsersSection" class="chart-card" style="margin-top: 25px;">
+                        <div class="chart-header">
+                            <h3>⭐ Active Users Today</h3>
+                            <p id="activeUsersDesc">Users who have connected today</p>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="activeUsersTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Username</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Email</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Phone</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Last Login</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Package</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activeUsersBody">
+                                    <tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Online Users Section -->
+                    <section id="onlineUsersSection" class="chart-card" style="margin-top: 25px;">
+                        <div class="chart-header">
+                            <h3>🟢 Online Users</h3>
+                            <p id="onlineUsersDesc">Currently connected users</p>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="onlineUsersTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Username</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Email</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Phone</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">IP Address</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Connected Since</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Package</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="onlineUsersBody">
+                                    <tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Offline Users Section -->
+                    <section id="offlineUsersSection" class="chart-card" style="margin-top: 25px;">
+                        <div class="chart-header">
+                            <h3>⚫ Offline Users</h3>
+                            <p id="offlineUsersDesc">Disconnected or inactive users</p>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="offlineUsersTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Username</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Email</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Phone</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Last Seen</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Days Offline</th>
+                                        <th style="padding: 12px; text-align: left; font-weight: 600;">Package</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="offlineUsersBody">
+                                    <tr><td colspan="6" style="padding: 20px; text-align: center; color: #999;">Loading...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Copyright Footer -->
+    <footer class="copyright-footer">
+        <p>All payments are collected by Fincom Technologies Limited . Fincom Technologies Limited is regulated by Bank of Uganda</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+<!-- Active Users Modal -->
+<div id="activeUsersModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:#fff; width:900px; max-width:98%; border-radius:10px; padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;">Active Users</h3>
+            <button onclick="closeActiveUsersModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+        </div>
+
+        <div style="margin-bottom:12px;">
+            <input id="activeUsersSearch" type="text" placeholder="Search users..." style="width:100%; padding:8px; border-radius:6px; border:1px solid #ddd;" oninput="filterActiveUsers()" />
+        </div>
+
+        <div id="activeUsersList" style="max-height:420px; overflow:auto; border:1px solid #eee; border-radius:6px; padding:6px; background:#fafafa;"></div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:10px;">
+            <button class="btn-small" onclick="closeActiveUsersModal()" style="background:#999;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Modal -->
+<div id="revenueModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:#fff; width:820px; max-width:98%; border-radius:10px; padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;">Record Revenue</h3>
+            <button onclick="closeRevenueModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div>
+                <label>Source</label>
+                <select id="revenueSource" style="width:100%; padding:8px; margin-top:6px;">
+                    <option value="Mobile Money">Mobile Money</option>
+                    <option value="Voucher">Voucher</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label>Amount (USH)</label>
+                <input id="revenueAmount" type="number" min="0" step="1" style="width:100%; padding:8px; margin-top:6px;" />
+            </div>
+            <div>
+                <label>Transaction / Voucher Code</label>
+                <input id="revenueRef" type="text" placeholder="TNX12345 or VOUCHERCODE" style="width:100%; padding:8px; margin-top:6px;" />
+            </div>
+            <div>
+                <label>Date</label>
+                <input id="revenueDate" type="date" style="width:100%; padding:8px; margin-top:6px;" />
+            </div>
+            <div style="grid-column:1 / -1;">
+                <label>Notes</label>
+                <input id="revenueNotes" type="text" placeholder="Optional description" style="width:100%; padding:8px; margin-top:6px;" />
+            </div>
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-bottom:12px;">
+            <button class="btn-small" onclick="closeRevenueModal()" style="background:#999;">Cancel</button>
+            <button class="btn-small" onclick="saveRevenueEntry()">Save Revenue</button>
+        </div>
+
+        <div style="margin-top:6px;">
+            <h4 style="margin:6px 0 8px 0;">Recorded Revenue</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+                <div><strong>Total:</strong> <span id="revenueTotal">USH 0</span></div>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-small" onclick="exportRevenueCSV()">Download CSV</button>
+                    <button class="btn-small" onclick="copyRevenueCodes()">Copy Refs</button>
+                </div>
+            </div>
+            <div id="revenueList" style="max-height:280px; overflow:auto; border:1px solid #eee; padding:8px; border-radius:6px; background:#fafafa;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Logs Modal -->
+<div id="paymentLogsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:#fff; width:1000px; max-width:98%; border-radius:10px; padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;">Payment Logs</h3>
+            <button onclick="closePaymentLogsModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:10px; align-items:center;">
+            <label style="margin:0 4px 0 0;">From</label>
+            <input id="plFrom" type="date" style="padding:6px;" />
+            <label style="margin:0 4px 0 0;">To</label>
+            <input id="plTo" type="date" style="padding:6px;" />
+            <label style="margin:0 4px 0 0;">Channel</label>
+            <select id="plChannel" style="padding:6px;"><option value="">All</option><option>Voucher</option><option>Mobile Money</option><option>Other</option></select>
+            <input id="plSearch" type="text" placeholder="Search msisdn/customer/notes" style="flex:1; padding:6px;" oninput="filterPaymentLogs()" />
+            <button class="btn-small" onclick="filterPaymentLogs()">Filter</button>
+            <button class="btn-small" onclick="exportPaymentLogsCSV()">Export CSV</button>
+            <button class="btn-small" onclick="generateSamplePaymentLogs()">Generate Sample</button>
+            <button class="btn-small" onclick="togglePaymentAddForm()">Add Payment</button>
+        </div>
+
+        <!-- Inline Add Payment Form (hidden by default) -->
+        <div id="plAddForm" style="display:none; margin-bottom:10px; padding:10px; border:1px solid #eee; border-radius:6px; background:#fff;">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:8px;">
+                <div>
+                    <label>Status</label>
+                    <select id="plStatus" style="width:100%; padding:6px; margin-top:4px;">
+                        <option value="Successful (Connected)">Successful (Connected)</option>
+                        <option value="Successful (Not Connected)">Successful (Not Connected)</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Channel</label>
+                    <select id="plChannelInput" style="width:100%; padding:6px; margin-top:4px;">
+                        <option value="Voucher">Voucher</option>
+                        <option value="Mobile Money">Mobile Money</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Location</label>
+                    <input id="plLocation" type="text" style="width:100%; padding:6px; margin-top:4px;" placeholder="KAWAALA" />
+                </div>
+                <div>
+                    <label>Msisdn</label>
+                    <input id="plMsisdn" type="text" style="width:100%; padding:6px; margin-top:4px;" placeholder="2567..." />
+                </div>
+                <div>
+                    <label>Customer</label>
+                    <input id="plCustomer" type="text" style="width:100%; padding:6px; margin-top:4px;" placeholder="Name or number" />
+                </div>
+                <div>
+                    <label>Date & Time</label>
+                    <input id="plDate" type="datetime-local" style="width:100%; padding:6px; margin-top:4px;" />
+                </div>
+                <div>
+                    <label>Amount Collected (USH)</label>
+                    <input id="plAmountCollected" type="number" min="0" style="width:100%; padding:6px; margin-top:4px;" />
+                </div>
+                <div>
+                    <label>Charge (USH)</label>
+                    <input id="plCharge" type="number" min="0" value="0" style="width:100%; padding:6px; margin-top:4px;" />
+                </div>
+                <div style="grid-column:1 / -1;">
+                    <label>Status Notes (agent remarks)</label>
+                    <input id="plStatusNotes" type="text" style="width:100%; padding:6px; margin-top:4px;" placeholder="e.g. Sell by Hajjijat" />
+                </div>
+                <div style="grid-column:1 / -1;">
+                    <label>Notes (voucher/mobile money)</label>
+                    <input id="plNotes" type="text" style="width:100%; padding:6px; margin-top:4px;" placeholder="Voucher CEN or transaction details" />
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn-small" onclick="togglePaymentAddForm()" style="background:#999;">Cancel</button>
+                <button class="btn-small" onclick="savePaymentLog()">Save Payment</button>
+            </div>
+        </div>
+
+        <div style="max-height:420px; overflow:auto; border:1px solid #eee; border-radius:6px;">
+            <table id="paymentLogsTable" style="width:100%; border-collapse:collapse; font-size:13px;">
+                <thead style="background:#fafafa; position:sticky; top:0;">
+                    <tr>
+                        <th style="padding:8px; text-align:left;">Status</th>
+                        <th style="padding:8px; text-align:left;">Channel</th>
+                        <th style="padding:8px; text-align:left;">Location</th>
+                        <th style="padding:8px; text-align:left;">Msisdn</th>
+                        <th style="padding:8px; text-align:left;">Customer</th>
+                        <th style="padding:8px; text-align:left;">Date</th>
+                        <th style="padding:8px; text-align:right;">Amount Collected</th>
+                        <th style="padding:8px; text-align:right;">Charge</th>
+                        <th style="padding:8px; text-align:right;">Amount Received</th>
+                        <th style="padding:8px; text-align:left;">Status Notes</th>
+                        <th style="padding:8px; text-align:left;">Notes</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Account Index Modal -->
+<div id="accountIndexModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:#fff; width:1000px; max-width:98%; border-radius:10px; padding:18px; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">💰 Account Index - Fund Classification</h3>
+            <button onclick="closeAccountIndexModal()" style="background:none; border:none; font-size:20px; cursor:pointer;">✖</button>
+        </div>
+
+        <!-- Summary Cards -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
+            <div style="background:#f0f7ff; border-left:4px solid #00D084; padding:15px; border-radius:6px;">
+                <div style="font-size:13px; color:#666; margin-bottom:5px;">🏦 BANKED FUNDS</div>
+                <div style="font-size:16px; font-weight:bold; color:#00D084; margin-bottom:5px;">From Mobile Money</div>
+                <div id="bankedTotal" style="font-size:18px; font-weight:bold; color:#333;">UGX 0.00</div>
+            </div>
+            <div style="background:#fff8f0; border-left:4px solid #f57c00; padding:15px; border-radius:6px;">
+                <div style="font-size:13px; color:#666; margin-bottom:5px;">📋 UNBANKED FUNDS</div>
+                <div style="font-size:16px; font-weight:bold; color:#f57c00; margin-bottom:5px;">From Vouchers</div>
+                <div id="unbankedTotal" style="font-size:18px; font-weight:bold; color:#333;">UGX 0.00</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="display:flex; border-bottom:1px solid #ddd; margin-bottom:15px;">
+            <button onclick="showAccountTab('overview')" id="tab-overview" class="tab-btn active" style="padding:10px 20px; border:none; background:none; cursor:pointer; border-bottom:3px solid #00D084; font-weight:500;">Overview</button>
+            <button onclick="showAccountTab('banked')" id="tab-banked" class="tab-btn" style="padding:10px 20px; border:none; background:none; cursor:pointer; font-weight:500;">🏦 Banked (Mobile Money)</button>
+            <button onclick="showAccountTab('unbanked')" id="tab-unbanked" class="tab-btn" style="padding:10px 20px; border:none; background:none; cursor:pointer; font-weight:500;">📋 Unbanked (Vouchers)</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div id="accountIndexContent" style="max-height:450px; overflow-y:auto;">
+            <!-- Overview Tab -->
+            <div id="tab-content-overview" class="tab-content">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead style="background:#f5f5f5; position:sticky; top:0;">
+                        <tr>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Name</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Source</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Type</th>
+                            <th style="padding:10px; text-align:right; border-bottom:1px solid #ddd;">Balance</th>
+                            <th style="padding:10px; text-align:center; border-bottom:1px solid #ddd;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="overviewTableBody">
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;"><strong>Banked Funds</strong></td>
+                            <td style="padding:10px;">Mobile Money</td>
+                            <td style="padding:10px;"><span style="background:#f0fff9; color:#00D084; padding:4px 8px; border-radius:4px; font-size:12px;">Cash</span></td>
+                            <td style="padding:10px; text-align:right;" id="overviewBankedAmount">UGX 0.00</td>
+                            <td style="padding:10px; text-align:center;"><span style="background:#e8f5e9; color:#4caf50; padding:4px 8px; border-radius:4px; font-size:12px;">✓ Active</span></td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;"><strong>Unbanked Funds</strong></td>
+                            <td style="padding:10px;">Vouchers</td>
+                            <td style="padding:10px;"><span style="background:#fff3e0; color:#f57c00; padding:4px 8px; border-radius:4px; font-size:12px;">Cash</span></td>
+                            <td style="padding:10px; text-align:right;" id="overviewUnbankedAmount">UGX 0.00</td>
+                            <td style="padding:10px; text-align:center;"><span style="background:#e8f5e9; color:#4caf50; padding:4px 8px; border-radius:4px; font-size:12px;">✓ Active</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Banked Funds Tab -->
+            <div id="tab-content-banked" class="tab-content" style="display:none;">
+                <div style="margin-bottom:12px; padding:10px; background:#f0fff9; border-radius:6px;">
+                    <strong style="color:#00D084;">Mobile Money Payments</strong>
+                    <p style="margin:5px 0 0 0; font-size:13px; color:#666;">Funds received through mobile money channels</p>
+                </div>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead style="background:#f5f5f5; position:sticky; top:0;">
+                        <tr>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Payment Source</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Channel</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Type</th>
+                            <th style="padding:10px; text-align:right; border-bottom:1px solid #ddd;">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bankedTableBody">
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;" colspan="4" style="text-align:center; color:#999;">No banked funds recorded yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Unbanked Funds Tab -->
+            <div id="tab-content-unbanked" class="tab-content" style="display:none;">
+                <div style="margin-bottom:12px; padding:10px; background:#fff3e0; border-radius:6px;">
+                    <strong style="color:#f57c00;">Voucher Payments</strong>
+                    <p style="margin:5px 0 0 0; font-size:13px; color:#666;">Funds received through voucher redemptions</p>
+                </div>
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead style="background:#f5f5f5; position:sticky; top:0;">
+                        <tr>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Voucher Source</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Channel</th>
+                            <th style="padding:10px; text-align:left; border-bottom:1px solid #ddd;">Type</th>
+                            <th style="padding:10px; text-align:right; border-bottom:1px solid #ddd;">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="unbankedTableBody">
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;" colspan="4" style="text-align:center; color:#999;">No unbanked funds recorded yet</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:15px;">
+            <button class="btn-small" onclick="closeAccountIndexModal()" style="background:#999;">Close</button>
+            <button class="btn-small" onclick="exportAccountIndexCSV()">📥 Export CSV</button>
+        </div>
+    </div>
+</div>
